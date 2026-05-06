@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxograma SEI — Pagamento a Fornecedor | DETRAN/SE</title>
+  <style>
+    :root {
+      --blue-dark: #0D2E6E;
+      --blue-mid: #1A4A9E;
+      --blue-light: #2459BF;
+      --yellow: #F5B800;
+      --yellow-dark: #D9A200;
+      --white: #FFFFFF;
+      --gray-light: #F0F4FA;
+      --gray-mid: #D8E2F0;
+      --text-dark: #1A2A4A;
+      --cogec: #F5B800;
+      --cogec-text: #7A5C00;
+      --fiscal: #38BDF8;
+      --fiscal-text: #0369A1;
+      --contab: #4ADE80;
+      --contab-text: #166534;
+      --cotes: #FB923C;
+      --cotes-text: #9A3412;
+      --special: #C084FC;
+      --special-text: #6B21A8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      background: var(--gray-light);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, #122E80 100%);
+      color: white;
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 4px solid var(--yellow);
+    }
+    .logo-area { display: flex; flex-direction: column; gap: 4px; }
+    .logo-eyebrow { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.6); letter-spacing: 2.5px; text-transform: uppercase; }
+    .logo-main { font-size: 32px; font-weight: 900; letter-spacing: 1px; line-height: 1; }
+    .logo-main span { color: var(--yellow); }
+    .logo-tag { display: inline-block; background: var(--yellow); color: var(--blue-dark); font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; margin-top: 6px; }
+    .header-right { text-align: right; }
+    .header-right h1 { font-size: 20px; font-weight: 800; color: white; line-height: 1.2; }
+    .header-right .subtitle { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 6px; }
+    .header-right .meta { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; letter-spacing: 0.5px; }
+
+    .units-bar { background: var(--blue-mid); padding: 12px 40px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+    .units-label { color: rgba(255,255,255,0.55); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+    .unit-chip { display: flex; align-items: center; gap: 7px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; color: white; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); }
+    .unit-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+    .main { max-width: 800px; margin: 0 auto; padding: 48px 24px 60px; }
+    .flowchart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .step { width: 100%; max-width: 680px; }
+
+    .step-card { background: white; border-radius: 14px; padding: 22px 24px 22px 0; display: flex; align-items: stretch; box-shadow: 0 2px 14px rgba(13,46,110,0.09); cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; overflow: hidden; position: relative; }
+    .step-card:hover { box-shadow: 0 6px 24px rgba(13,46,110,0.16); transform: translateY(-2px); }
+    .step-stripe { width: 6px; flex-shrink: 0; margin-right: 20px; border-radius: 0; }
+    .stripe-cogec   { background: var(--cogec); }
+    .stripe-fiscal  { background: var(--fiscal); }
+    .stripe-contab  { background: var(--contab); }
+    .stripe-cotes   { background: var(--cotes); }
+    .stripe-special { background: var(--special); }
+    .step-body { flex: 1; }
+    .step-header-row { display: flex; align-items: flex-start; gap: 14px; }
+    .step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--blue-dark); color: white; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .step-num.special { background: var(--special-text); }
+    .step-content { flex: 1; }
+    .step-unit-label { font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; margin-bottom: 5px; }
+    .label-cogec   { color: var(--cogec-text); }
+    .label-fiscal  { color: var(--fiscal-text); }
+    .label-contab  { color: var(--contab-text); }
+    .label-cotes   { color: var(--cotes-text); }
+    .label-special { color: var(--special-text); }
+    .step-title { font-size: 16px; font-weight: 700; color: var(--blue-dark); margin-bottom: 6px; line-height: 1.3; }
+    .step-desc { font-size: 14px; color: #4A5568; line-height: 1.55; }
+    .expand-toggle { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); color: #A0AEC0; font-size: 14px; transition: transform 0.25s; pointer-events: none; }
+    .step-card.open .expand-toggle { transform: translateY(-50%) rotate(180deg); }
+    .step-detail { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.3s; padding: 0 0 0 44px; }
+    .step-card.open .step-detail { max-height: 520px; padding: 14px 0 4px 44px; }
+    .step-detail-inner { border-top: 1px solid var(--gray-mid); padding-top: 12px; font-size: 13.5px; color: #4A5568; line-height: 1.65; }
+
+    /* Vídeos dentro dos cards */
+    .step-videos-label { font-size: 11px; font-weight: 700; color: #9CA3AF; letter-spacing: 0.5px; margin-top: 14px; margin-bottom: 6px; text-transform: uppercase; }
+    .step-videos { display: flex; flex-wrap: wrap; gap: 6px; }
+    .step-video-link { display: inline-flex; align-items: center; gap: 6px; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 6px; padding: 5px 10px; text-decoration: none; font-size: 12px; font-weight: 600; color: var(--blue-dark); transition: all 0.18s; white-space: nowrap; }
+    .step-video-link:hover { background: var(--blue-dark); color: white; border-color: var(--blue-dark); }
+    .sv-num { background: var(--blue-dark); color: var(--yellow); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; transition: all 0.18s; }
+    .step-video-link:hover .sv-num { background: var(--yellow); color: var(--blue-dark); }
+
+    .special-badge { display: inline-flex; align-items: center; gap: 6px; background: #F3E5FF; color: var(--special-text); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; border: 1px solid #D8B4FE; margin-top: 10px; }
+
+    .connector { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 680px; position: relative; height: 52px; }
+    .conn-line { width: 2px; flex: 1; background: rgba(13,46,110,0.25); }
+    .conn-head { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 9px solid rgba(13,46,110,0.3); }
+    .conn-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--blue-dark); color: white; font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px; padding: 3px 12px; border-radius: 20px; white-space: nowrap; }
+
+    .decision-wrap { width: 100%; max-width: 680px; display: flex; align-items: center; justify-content: center; gap: 0; padding: 4px 0; }
+    .decision-side { flex: 1; display: flex; align-items: center; }
+    .decision-side.left { justify-content: flex-end; padding-right: 16px; }
+    .decision-side.right { padding-left: 16px; }
+    .decision-answer { font-size: 12px; font-weight: 700; line-height: 1.3; }
+    .answer-no { color: #DC2626; text-align: right; }
+    .answer-yes { color: #16A34A; }
+    .answer-sub { font-size: 10px; font-weight: 400; color: #9CA3AF; display: block; }
+    .diamond { width: 88px; height: 88px; background: var(--yellow); transform: rotate(45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(245,184,0,0.35); flex-shrink: 0; border-radius: 6px; }
+    .diamond-label { transform: rotate(-45deg); font-size: 9.5px; font-weight: 900; color: var(--blue-dark); text-align: center; text-transform: uppercase; line-height: 1.3; }
+
+    .end-node { background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid)); color: white; border-radius: 50px; padding: 18px 44px; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 12px; box-shadow: 0 6px 24px rgba(13,46,110,0.28); letter-spacing: 0.3px; }
+    .end-icon { width: 32px; height: 32px; background: var(--yellow); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+
+    .section-block { margin-top: 56px; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(13,46,110,0.10); }
+    .section-header { background: var(--blue-dark); color: white; padding: 16px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; }
+    .section-header:hover { background: var(--blue-mid); }
+    .section-icon { font-size: 22px; }
+    .section-header h2 { font-size: 15px; font-weight: 700; flex: 1; }
+    .section-header .toggle-chip { background: rgba(255,255,255,0.15); font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 20px; color: white; border: 1px solid rgba(255,255,255,0.2); }
+    .section-body { background: white; display: none; }
+    .section-body.open { display: block; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; padding: 20px; }
+    .video-link { display: flex; align-items: center; gap: 10px; background: var(--gray-light); border: 1px solid var(--gray-mid); border-radius: 9px; padding: 11px 14px; text-decoration: none; transition: all 0.2s; }
+    .video-link:hover { background: var(--blue-dark); border-color: var(--blue-dark); }
+    .video-link:hover .video-num { background: var(--yellow); color: var(--blue-dark); }
+    .video-link:hover .video-name { color: white; }
+    .video-link:hover .play-btn { color: var(--yellow); }
+    .video-num { background: var(--blue-dark); color: var(--yellow); font-size: 10px; font-weight: 800; padding: 3px 7px; border-radius: 5px; white-space: nowrap; flex-shrink: 0; transition: all 0.2s; }
+    .video-name { font-size: 13px; font-weight: 600; color: var(--text-dark); flex: 1; transition: color 0.2s; line-height: 1.3; }
+    .play-btn { font-size: 12px; color: #9CA3AF; flex-shrink: 0; transition: color 0.2s; }
+
+    .whatsapp-block { margin-top: 40px; background: white; border-radius: 14px; padding: 28px 32px; text-align: center; box-shadow: 0 2px 12px rgba(13,46,110,0.09); }
+    .whatsapp-block p { font-size: 14px; color: #6B7280; margin-bottom: 18px; }
+    .whatsapp-btn { display: inline-flex; align-items: center; gap: 12px; background: #22C55E; color: white; text-decoration: none; padding: 16px 36px; border-radius: 50px; font-size: 15px; font-weight: 800; box-shadow: 0 4px 20px rgba(34,197,94,0.38); transition: all 0.2s; }
+    .whatsapp-btn:hover { background: #16A34A; box-shadow: 0 6px 28px rgba(34,197,94,0.48); transform: translateY(-2px); }
+    .whatsapp-btn svg { flex-shrink: 0; }
+    .whatsapp-sub { margin-top: 12px; font-size: 12px; color: #9CA3AF; }
+
+    .footer { background: var(--blue-dark); border-top: 3px solid var(--yellow); color: rgba(255,255,255,0.5); text-align: center; padding: 22px 20px; font-size: 12px; margin-top: 56px; }
+    .footer strong { color: var(--yellow); }
+
+    @media (max-width: 600px) {
+      .header { flex-direction: column; text-align: center; padding: 20px; }
+      .header-right { text-align: center; }
+      .units-bar { padding: 12px 20px; gap: 10px; }
+      .main { padding: 28px 16px 48px; }
+      .logo-main { font-size: 24px; }
+      .end-node { padding: 16px 28px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-area">
+    <div class="logo-eyebrow">Departamento Estadual de Trânsito</div>
+    <div class="logo-main">DETRAN/<span>SE</span></div>
+    <div class="logo-tag">Sergipe · Governo do Estado</div>
+  </div>
+  <div class="header-right">
+    <h1>Fluxograma Operacional SEI<br>Pagamento a Fornecedor</h1>
+    <div class="subtitle">Sistema Eletrônico de Informações — Procedimento Administrativo</div>
+    <div class="meta">Ageplandi — Assessoria Geral de Planejamento e Desenvolvimento Institucional · Maio de 2026</div>
+  </div>
+</header>
+
+<div class="units-bar">
+  <span class="units-label">Unidades Envolvidas</span>
+  <div class="unit-chip"><div class="unit-dot" style="background:var(--cogec)"></div>COGEC</div>
+  <div class="unit-chip"><div class="unit-dot" style="background:var(--fiscal)"></div>Fiscal do Contrato</div>
+  <div class="unit-chip"><div class="unit-dot" style="background:var(--contab)"></div>CONTAB</div>
+  <div class="unit-chip"><div class="unit-dot" style="background:var(--cotes)"></div>COTES</div>
+</div>
+
+<main class="main">
+  <div class="flowchart">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-card" onclick="toggleCard(this)">
+        <div class="step-stripe stripe-cogec"></div>
+        <div class="step-body">
+          <div class="step-header-row">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-unit-label label-cogec">COGEC — Coordenadoria Geral de Contratos</div>
+              <div class="step-title">Recebimento da Demanda e Análise Documental</div>
+              <div class="step-desc">Recebe a demanda do fornecedor e realiza a análise da documentação apresentada.</div>
+              <div class="step-detail">
+                <div class="step-detail-inner">
+                  A COGEC é a porta de entrada do processo. Ao receber a demanda, verifica se toda a documentação exigida está presente e em conformidade com os requisitos legais e contratuais vigentes antes de prosseguir.
+                  <div class="step-videos-label">🎬 Em caso de dúvida, assista os vídeos indicados</div>
+                  <div class="step-videos">
+                    <a href="https://www.youtube.com/watch?v=GKAKHJt6VY0" target="_blank" class="step-video-link"><span class="sv-num">1.1</span> Apresentação ▶</a>
+                    <a href="https://www.youtube.com/watch?v=T0FQNFnSlV4" target="_blank" class="step-video-link"><span class="sv-num">1.2</span> Conceitos Básicos ▶</a>
+                    <a href="https://www.youtube.com/watch?v=i0xrc8Ho5IU" target="_blank" class="step-video-link"><span class="sv-num">1.3</span> Portal do SEI ▶</a>
+                    <a href="https://www.youtube.com/watch?v=EMtEYJm9iPs" target="_blank" class="step-video-link"><span class="sv-num">1.4</span> Acessar o Sistema ▶</a>
+                    <a href="https://www.youtube.com/watch?v=MgNG_NcSrOw" target="_blank" class="step-video-link"><span class="sv-num">1.5</span> Tela Inicial ▶</a>
+                    <a href="https://www.youtube.com/watch?v=9VPhQxnUp6A" target="_blank" class="step-video-link"><span class="sv-num">1.6</span> Acessando um Processo ▶</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="expand-toggle">▼</div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="conn-line"></div><div class="conn-head"></div></div>
+
+    <!-- DECISION -->
+    <div class="decision-wrap">
+      <div class="decision-side left">
+        <div class="decision-answer answer-no">✕ Não<br><span class="answer-sub">Retorna ao Fornecedor</span></div>
+      </div>
+      <div class="diamond"><div class="diamond-label">Documentação<br>em<br>Ordem?</div></div>
+      <div class="decision-side right">
+        <div class="decision-answer answer-yes">✓ Sim</div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="conn-line"></div><div class="conn-head"></div></div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-card" onclick="toggleCard(this)">
+        <div class="step-stripe stripe-cogec"></div>
+        <div class="step-body">
+          <div class="step-header-row">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-unit-label label-cogec">COGEC — Coordenadoria Geral de Contratos</div>
+              <div class="step-title">Criação do Processo no SEI</div>
+              <div class="step-desc">Com a documentação em ordem, a COGEC cria e monta o processo no Sistema Eletrônico de Informações — SEI.</div>
+              <div class="step-detail">
+                <div class="step-detail-inner">
+                  O processo é iniciado no SEI com todos os documentos necessários incluídos e organizados. Esta etapa formaliza a demanda no sistema e dá início ao trâmite oficial do procedimento de pagamento.
+                  <div class="step-videos-label">🎬 Em caso de dúvida, assista os vídeos indicados</div>
+                  <div class="step-videos">
+                    <a href="https://www.youtube.com/watch?v=8s20rbeCoJs" target="_blank" class="step-video-link"><span class="sv-num">1.7</span> Receber e Atribuir Processo ▶</a>
+                    <a href="https://www.youtube.com/watch?v=M3PTAbFciHo" target="_blank" class="step-video-link"><span class="sv-num">1.8</span> Iniciar Processo ▶</a>
+                    <a href="https://www.youtube.com/watch?v=EAoytf0OXqU" target="_blank" class="step-video-link"><span class="sv-num">1.9</span> Incluir Doc. Interno ▶</a>
+                    <a href="https://www.youtube.com/watch?v=1Jva8_e63eI" target="_blank" class="step-video-link"><span class="sv-num">1.10</span> Editar Doc. Interno ▶</a>
+                    <a href="https://www.youtube.com/watch?v=OVUjji19BLI" target="_blank" class="step-video-link"><span class="sv-num">1.11</span> Incluir Doc. Externo ▶</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="expand-toggle">▼</div>
+      </div>
+    </div>
+
+    <div class="connector">
+      <div class="conn-line"></div>
+      <div class="conn-label">Envio do Processo → Fiscal do Contrato</div>
+      <div class="conn-head"></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-card" onclick="toggleCard(this)">
+        <div class="step-stripe stripe-fiscal"></div>
+        <div class="step-body">
+          <div class="step-header-row">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-unit-label label-fiscal">FISCAL DO CONTRATO</div>
+              <div class="step-title">Análise de Conformidade (Ateste)</div>
+              <div class="step-desc">O Fiscal do Contrato recebe o processo e realiza a análise de conformidade, emitindo formalmente o ateste.</div>
+              <div class="step-detail">
+                <div class="step-detail-inner">
+                  O Fiscal verifica se os serviços ou produtos foram efetivamente prestados/entregues conforme o contrato. O ateste formaliza essa confirmação e é condição essencial para o prosseguimento do pagamento.
+                  <div class="step-videos-label">🎬 Em caso de dúvida, assista os vídeos indicados</div>
+                  <div class="step-videos">
+                    <a href="https://www.youtube.com/watch?v=8s20rbeCoJs" target="_blank" class="step-video-link"><span class="sv-num">1.7</span> Receber e Atribuir Processo ▶</a>
+                    <a href="https://www.youtube.com/watch?v=pEDtSTeRdkA" target="_blank" class="step-video-link"><span class="sv-num">1.12</span> Consultar / Alterar Doc. ▶</a>
+                    <a href="https://www.youtube.com/watch?v=XM6iv6KYR0c" target="_blank" class="step-video-link"><span class="sv-num">1.13</span> Assinar Documento ▶</a>
+                    <a href="https://www.youtube.com/watch?v=tzmcji-mniQ" target="_blank" class="step-video-link"><span class="sv-num">1.14</span> Bloco de Assinatura ▶</a>
+                    <a href="https://www.youtube.com/watch?v=7jNOBmjqeXI" target="_blank" class="step-video-link"><span class="sv-num">1.15</span> Enviar Processo ▶</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="expand-toggle">▼</div>
+      </div>
+    </div>
+
+    <div class="connector">
+      <div class="conn-line"></div>
+      <div class="conn-label">Devolução do Processo → COGEC</div>
+      <div class="conn-head"></div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-card" onclick="toggleCard(this)">
+        <div class="step-stripe stripe-cogec"></div>
+        <div class="step-body">
+          <div class="step-header-row">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-unit-label label-cogec">COGEC — Coordenadoria Geral de Contratos</div>
+              <div class="step-title">Criação do Despacho para Pagamento</div>
+              <div class="step-desc">Estando o processo em conformidade com o ateste do Fiscal, a COGEC elabora o despacho formal de autorização para pagamento.</div>
+              <div class="step-detail">
+                <div class="step-detail-inner">
+                  O despacho de pagamento é o documento que instrui as etapas seguintes de execução financeira, autorizando formalmente as coordenadorias de Contabilidade e Tesouraria a prosseguirem.
+                  <div class="step-videos-label">🎬 Em caso de dúvida, assista os vídeos indicados</div>
+                  <div class="step-videos">
+                    <a href="https://www.youtube.com/watch?v=EAoytf0OXqU" target="_blank" class="step-video-link"><span class="sv-num">1.9</span> Incluir Doc. Interno ▶</a>
+                    <a href="https://www.youtube.com/watch?v=1Jva8_e63eI" target="_blank" class="step-video-link"><span class="sv-num">1.10</span> Editar Doc. Interno ▶</a>
+                    <a href="https://www.youtube.com/watch?v=XM6iv6KYR0c" target="_blank" class="step-video-link"><span class="sv-num">1.13</span> Assinar Documento ▶</a>
+                    <a href="https://www.youtube.com/watch?v=7jNOBmjqeXI" target="_blank" class="step-video-link"><span class="sv-num">1.15</span> Enviar Processo ▶</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="expand-toggle">▼</div>
+      </div>
+    </div>
+
+    <div class="connector">
+      <div class="conn-line"></div>
+      <div class="conn-label">Envio do Processo → CONTAB</div>
+      <div class="conn-head"></div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-card" onclick="toggleCard(this)">
+        <div class="step-stripe stripe-contab"></div>
+        <div class="step-body">
+          <div class="step-header-row">
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <div class="step-unit-label label-contab">CONTAB — Coordenadoria de Contabilidade</div>
+              <div class="step-title">Geração da Nota de Empenho (NE)</div>
+              <div class="step-desc">Após análise geral de conformidade, a CONTAB emite a Nota de Empenho — NE, reservando o recurso orçamentário para o pagamento.</div>
+              <div class="step-detail">
+                <div class="step-detail-inner">
+                  A Coordenadoria de Contabilidade analisa os aspectos contábeis e orçamentários do processo. A Nota de Empenho (NE) é o instrumento que compromete o recurso orçamentário, garantindo que haverá saldo disponível para a liquidação da despesa.
+                  <div class="step-videos-label">🎬 Em caso de dúvida, assista os vídeos indicados</div>
+                  <div class="step-videos">
+                    <a href="https://www.youtube.com/watch?v=8s20rbeCoJs" target="_blank" class="step-video-link"><span class="sv-num">1.7</span> Receber e Atribuir Processo ▶</a>
+                    <a href="https://www.youtube.com/watch?v=OVUjji19BLI" target="_blank" class="step-video-link"><span class="sv-num">1.11</span> Incluir Doc. Externo ▶</a>
+                    <a href="https://www.youtube.com/watch?v=pEDtSTeRdkA" target="_blank" class="step-video-link"><span class="sv-num">1.12</span> Consultar / Alterar Doc. ▶</a>
+                    <a href="https://www.youtube.com/watch?v=XM6iv6KYR0c" target="_blank" class="step-video-link"><span class="sv-num">1.13</span> Assinar Documento ▶</a>
+                    <a href="https://www.youtube.com/watch?v=7jNOBmjqeXI" target="_blank" class="step-video-link"><span class="sv-num">1.15</span> Enviar Processo ▶</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="expand-toggle">▼</div>
+      </div>
+    </div>
+
+    <div class="connector">
+      <div class="conn-line"></div>
+      <div class="conn-label">Envio do Processo → COTES</div>
+      <div class="conn-head"></div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+      <div class="step-card" onclick="toggleCard(this)">
+        <div class="step-stripe stripe-cotes"></div>
+        <div class="step-body">
+          <div class="step-header-row">
+            <div class="step-num">6</div>
+            <div class="step-content">
+              <div class="step-unit-label label-cotes">COTES — Coordenadoria de Tesouraria</div>
+              <div class="step-title">Geração da Ordem Bancária / Guia de Pagamento</div>
+              <div class="step-desc">Após análise de conformidade, a COTES gera a Ordem Bancária ou Guia de pagamento, efetivando o repasse ao fornecedor. O processo é finalizado.</div>
+              <div class="step-detail">
+                <div class="step-detail-inner">
+                  A Coordenadoria de Tesouraria é responsável pela execução financeira. Emite a Ordem Bancária (para transferências eletrônicas) ou a Guia de Pagamento, concluindo o ciclo do procedimento administrativo de pagamento.
+                  <div class="step-videos-label">🎬 Em caso de dúvida, assista os vídeos indicados</div>
+                  <div class="step-videos">
+                    <a href="https://www.youtube.com/watch?v=8s20rbeCoJs" target="_blank" class="step-video-link"><span class="sv-num">1.7</span> Receber e Atribuir Processo ▶</a>
+                    <a href="https://www.youtube.com/watch?v=pEDtSTeRdkA" target="_blank" class="step-video-link"><span class="sv-num">1.12</span> Consultar / Alterar Doc. ▶</a>
+                    <a href="https://www.youtube.com/watch?v=uCXgI_k6VZ4" target="_blank" class="step-video-link"><span class="sv-num">1.16</span> Concluir Processo ▶</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="expand-toggle">▼</div>
+      </div>
+    </div>
+
+    <div class="connector"><div class="conn-line"></div><div class="conn-head"></div></div>
+
+    <!-- END NODE -->
+    <div class="step" style="display:flex;justify-content:center;">
+      <div class="end-node">
+        <div class="end-icon">✓</div>
+        Processo Finalizado — Pagamento Concluído
+      </div>
+    </div>
+
+    <!-- Connector to special step -->
+    <div class="connector" style="height:64px;">
+      <div class="conn-line" style="background:rgba(192,132,252,0.5)"></div>
+      <div class="conn-label" style="background:var(--special-text);font-size:9.5px;text-align:center;white-space:normal;max-width:220px;line-height:1.4;padding:4px 12px;">
+        Apenas para Contratos Centralizados<br>COTES → Fiscal do Contrato (Seplag)
+      </div>
+      <div class="conn-head" style="border-top-color:rgba(192,132,252,0.5)"></div>
+    </div>
+
+    <!-- STEP 7 Special -->
+    <div class="step">
+      <div class="step-card" onclick="toggleCard(this)">
+        <div class="step-stripe stripe-special"></div>
+        <div class="step-body">
+          <div class="step-header-row">
+            <div class="step-num special">★</div>
+            <div class="step-content">
+              <div class="step-unit-label label-special">COTES → FISCAL DO CONTRATO (SEPLAG)</div>
+              <div class="step-title">Envio de Documentos ao Fiscal — Contratos Centralizados</div>
+              <div class="step-desc">
+                Exclusivamente nos casos de Contratos Centralizados, a COTES realiza o envio dos documentos ao Fiscal do Contrato junto à Seplag.
+                <div class="special-badge">⚠ Exclusivo: Contratos Centralizados</div>
+              </div>
+              <div class="step-detail">
+                <div class="step-detail-inner">
+                  Esta etapa aplica-se somente quando o contrato é administrado de forma centralizada pela Secretaria de Estado do Planejamento, Orçamento e Gestão (Seplag). A COTES encaminha a documentação pertinente ao Fiscal do Contrato designado para ciência e registros necessários.
+                  <div class="step-videos-label">🎬 Em caso de dúvida, assista os vídeos indicados</div>
+                  <div class="step-videos">
+                    <a href="https://www.youtube.com/watch?v=7jNOBmjqeXI" target="_blank" class="step-video-link"><span class="sv-num">1.15</span> Enviar Processo ▶</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="expand-toggle">▼</div>
+      </div>
+    </div>
+
+  </div><!-- /flowchart -->
+
+  <!-- VIDEOS SECTION -->
+  <div class="section-block">
+    <div class="section-header" onclick="toggleSection('videos')">
+      <span class="section-icon">🎬</span>
+      <h2>Acervo Completo de Vídeos de Apoio — SEI Sergipe</h2>
+      <span class="toggle-chip" id="videos-chip">Mostrar ▼</span>
+    </div>
+    <div class="section-body" id="videos-body">
+      <div class="video-grid">
+        <a href="https://www.youtube.com/watch?v=GKAKHJt6VY0" target="_blank" class="video-link"><span class="video-num">1.1</span><span class="video-name">SEI — Apresentação</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=T0FQNFnSlV4" target="_blank" class="video-link"><span class="video-num">1.2</span><span class="video-name">Introdução a Conceitos Básicos</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=i0xrc8Ho5IU" target="_blank" class="video-link"><span class="video-num">1.3</span><span class="video-name">Portal do SEI Recife</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=EMtEYJm9iPs" target="_blank" class="video-link"><span class="video-num">1.4</span><span class="video-name">Acessar o Sistema</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=MgNG_NcSrOw" target="_blank" class="video-link"><span class="video-num">1.5</span><span class="video-name">Identificação da Tela Inicial</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=9VPhQxnUp6A" target="_blank" class="video-link"><span class="video-num">1.6</span><span class="video-name">Acessando um Processo</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=8s20rbeCoJs" target="_blank" class="video-link"><span class="video-num">1.7</span><span class="video-name">Receber e Atribuir Processo</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=M3PTAbFciHo" target="_blank" class="video-link"><span class="video-num">1.8</span><span class="video-name">Iniciar Processo</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=EAoytf0OXqU" target="_blank" class="video-link"><span class="video-num">1.9</span><span class="video-name">Incluir Documento Interno</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=1Jva8_e63eI" target="_blank" class="video-link"><span class="video-num">1.10</span><span class="video-name">Editar Documento Interno</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=OVUjji19BLI" target="_blank" class="video-link"><span class="video-num">1.11</span><span class="video-name">Incluir Documento Externo</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=pEDtSTeRdkA" target="_blank" class="video-link"><span class="video-num">1.12</span><span class="video-name">Consultar / Alterar Documento</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=XM6iv6KYR0c" target="_blank" class="video-link"><span class="video-num">1.13</span><span class="video-name">Assinar Documento</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=tzmcji-mniQ" target="_blank" class="video-link"><span class="video-num">1.14</span><span class="video-name">Utilizar Bloco de Assinatura</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=7jNOBmjqeXI" target="_blank" class="video-link"><span class="video-num">1.15</span><span class="video-name">Enviar Processo</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=uCXgI_k6VZ4" target="_blank" class="video-link"><span class="video-num">1.16</span><span class="video-name">Concluir Processo</span><span class="play-btn">▶</span></a>
+        <a href="https://www.youtube.com/watch?v=_Fy16ZLbDn8" target="_blank" class="video-link"><span class="video-num">1.17</span><span class="video-name">Excluir e Cancelar Documento</span><span class="play-btn">▶</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHATSAPP -->
+  <div class="whatsapp-block">
+    <p>Em caso de outras dúvidas relacionadas ao sistema, acione a equipe Ageplandi:</p>
+    <a href="https://wa.me/5579998298660?text=Ol%C3%A1..%20Estou%20com%20d%C3%BAvidas%20sobre%20o%20SEI%20Sergipe..." target="_blank" class="whatsapp-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Falar com a Equipe Ageplandi no WhatsApp
+    </a>
+    <div class="whatsapp-sub">Dúvidas sobre o SEI Sergipe? Nossa equipe está pronta para ajudar.</div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <strong>DETRAN/SE</strong> — Departamento Estadual de Trânsito de Sergipe &nbsp;|&nbsp;
+  <strong>Ageplandi</strong> — Assessoria Geral de Planejamento e Desenvolvimento Institucional &nbsp;|&nbsp;
+  Maio de 2026
+</footer>
+
+<script>
+  function toggleCard(card) { card.classList.toggle('open'); }
+  function toggleSection(id) {
+    const body = document.getElementById(id + '-body');
+    const chip = document.getElementById(id + '-chip');
+    const isOpen = body.classList.toggle('open');
+    chip.textContent = isOpen ? 'Ocultar ▲' : 'Mostrar ▼';
+  }
+</script>
+</body>
+</html>
